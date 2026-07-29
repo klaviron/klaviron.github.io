@@ -2073,7 +2073,7 @@
       const btn = document.getElementById('paywall-btn');
       btn.textContent = 'Перенаправляем на оплату…';
       btn.disabled = true;
-      try { sessionStorage.setItem('klaviron_quiz_answers', JSON.stringify(payload)); } catch(e) {}
+      try { localStorage.setItem('klaviron_quiz_answers', JSON.stringify(payload)); console.log('[KlavirON] Saved quiz answers to localStorage:', JSON.stringify(payload)); } catch(e) { console.error('[KlavirON] Failed to save answers:', e); }
       try {
         const params = new URLSearchParams({ action: 'createpayment', goal: payload.goal || 'hobby', budget: payload.budget || 'low', experience: payload.experience || 'beginner', format: payload.format || 'synth', amount: '29900' });
         const res = await fetch(API_URL + '?' + params.toString(), { redirect: 'follow', cache: 'no-store' });
@@ -2134,9 +2134,10 @@
               document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' });
               document.getElementById('post-payment-continue').addEventListener('click', () => {
               try {
-                const saved = JSON.parse(sessionStorage.getItem('klaviron_quiz_answers') || '{}');
+                const saved = JSON.parse(localStorage.getItem('klaviron_quiz_answers') || '{}');
+                console.log('[KlavirON] Restored quiz answers from localStorage:', JSON.stringify(saved));
                 if (saved && saved.goal) { quizState.answers = saved; quizState.steps = getVisibleSteps(saved.goal); buildProgress(); }
-              } catch(e) {}
+              } catch(e) { console.error('[KlavirON] Failed to restore answers:', e); }
               submitQuiz();
             });
           } else {
